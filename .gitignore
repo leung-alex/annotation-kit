@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.logs/
+.dsh/
+.dsh-upstream/
+.artifacts/
+*.tgz
+.env
+.env.*
+!.env.example

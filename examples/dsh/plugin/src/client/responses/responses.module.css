@@ -1,0 +1,7 @@
+.overlay { z-index: 1120; }
+.source { position: relative; }
+.markers { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.highlight { position: absolute; background: #3496fb40; pointer-events: none; }
+.marker { position: absolute; width: 20px; height: 20px; border-radius: 50%; corner-shape: round; color: #fff; font-size: 12px; font-weight: 400; line-height: 18px; text-align: center; }
+.overlay .ask { justify-content: center; box-sizing: border-box; height: 28px; border-radius: 8px; font-size: 12px; font-weight: 400; line-height: 16px; white-space: nowrap; padding: 0 8px; }
+:global([data-theme="dark"]) .highlight { background: #459dff55; }

@@ -1,0 +1,86 @@
+{
+  "name": "annotation-kit",
+  "version": "0.1.0",
+  "description": "Host-independent annotations for web pages, documents, spreadsheets and conversation text",
+  "type": "module",
+  "license": "MIT",
+  "author": "leung-alex",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leung-alex/annotation-kit.git"
+  },
+  "homepage": "https://github.com/leung-alex/annotation-kit#readme",
+  "bugs": "https://github.com/leung-alex/annotation-kit/issues",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "packageManager": "pnpm@11.28.5",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/types/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./electron": {
+      "types": "./dist/types/electron/index.d.ts",
+      "import": "./dist/electron.js"
+    },
+    "./styles.css": {
+      "types": "./dist/styles.d.ts",
+      "default": "./dist/annotation-kit.css"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "README.zh-CN.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "verify": "pnpm typecheck && pnpm test && pnpm build && node scripts/check-package.mjs",
+    "dev": "vite --config examples/react/vite.config.ts",
+    "build:demo": "vite build --config examples/react/vite.config.ts",
+    "check:package": "node scripts/check-package.mjs",
+    "dsh:prepare": "node examples/dsh/manage.mjs prepare",
+    "dsh:build": "node examples/dsh/manage.mjs build",
+    "dsh:start": "node examples/dsh/manage.mjs start",
+    "dsh:check": "node examples/dsh/manage.mjs check",
+    "dsh:revert": "node examples/dsh/manage.mjs revert",
+    "test:demo": "node scripts/verify-demo.mjs",
+    "fixtures:serve": "node scripts/fixtures-server.mjs"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@fortune-sheet/core": "1.0.4",
+    "@fortune-sheet/react": "1.0.4",
+    "react-grab": "0.2.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@testing-library/react": "16.3.1",
+    "@types/node": "22.19.7",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "html2canvas": "1.4.1",
+    "jsdom": "29.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "typescript": "6.0.3",
+    "vite": "6.4.3",
+    "vitest": "4.1.8"
+  }
+}

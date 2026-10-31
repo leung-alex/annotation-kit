@@ -1,0 +1,6 @@
+.action { position: fixed; z-index: 1100; max-width: min(360px, calc(100vw - 24px)); padding: 4px; border: 1px solid var(--color-border-subtle); border-radius: 12px; background: var(--color-surface); color: var(--color-text-primary); box-shadow: 0 2px 6px #00000012, 0 8px 24px #0000000d; -webkit-app-region: no-drag; }
+.button { display: flex; align-items: center; gap: 6px; min-height: 30px; padding: 4px 8px; border: 0; border-radius: 8px; background: transparent; color: inherit; font: inherit; font-size: 14px; font-weight: 400; line-height: 20px; white-space: nowrap; cursor: pointer; }
+.button:hover { background: var(--color-background-secondary-soft); }
+.button:focus-visible { outline: 2px solid var(--color-text-info, #1677ff); outline-offset: 2px; }
+.button:disabled { opacity: .5; cursor: default; }
+.error { display: block; max-width: 280px; padding: 4px 8px; color: var(--color-text-danger); font-size: 12px; line-height: 18px; }

@@ -1,0 +1,84 @@
+{
+  "name": "@annotation-kit/dsh-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-chat",
+        "@deepseek-ai/dsh-client-ui-input-trigger",
+        "@deepseek-ai/dsh-client-ui-sidebar-browser",
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview"
+      ]
+    }
+  },
+  "files": [
+    "lib/**/*.js",
+    "lib/**/*.map",
+    "lib/**/*.d.ts"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "4.0.5",
+    "@deepseek-ai/schemastery": "3.18.5-alpha.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "link:vendor/cordis",
+    "@deepseek-ai/dsh-api-session-controller": "link:packages/api/session-controller",
+    "@deepseek-ai/dsh-api-workspace-controller": "link:packages/api/workspace-controller",
+    "@deepseek-ai/dsh-brand": "link:packages/util/brand",
+    "@deepseek-ai/dsh-client-locale": "link:packages/client/locale",
+    "@deepseek-ai/dsh-client-store": "link:packages/client/store",
+    "@deepseek-ai/dsh-client-ui-attachment": "link:packages/client/ui-attachment",
+    "@deepseek-ai/dsh-client-ui-chat": "link:packages/client/ui-chat",
+    "@deepseek-ai/dsh-client-ui-conversation": "link:packages/client/ui-conversation",
+    "@deepseek-ai/dsh-client-ui-input-trigger": "link:packages/client/ui-input-trigger",
+    "@deepseek-ai/dsh-client-ui-primitives": "link:packages/client/ui-primitives",
+    "@deepseek-ai/dsh-client-ui-renderer": "link:packages/client/ui-renderer",
+    "@deepseek-ai/dsh-client-ui-session": "link:packages/client/ui-session",
+    "@deepseek-ai/dsh-client-ui-sidebar-browser": "link:packages/client/ui-sidebar-browser",
+    "@deepseek-ai/dsh-client-ui-sidebar-documentpreview": "link:packages/client/ui-sidebar-documentpreview",
+    "@deepseek-ai/dsh-client-ui-sidebar-right": "link:packages/client/ui-sidebar-right",
+    "@deepseek-ai/dsh-client-ui-slots": "link:packages/client/ui-slots",
+    "@deepseek-ai/dsh-host-webserver": "link:packages/host/webserver",
+    "@deepseek-ai/dsh-session": "link:packages/core/session",
+    "@deepseek-ai/dsh-util-values": "link:packages/util/values",
+    "@deepseek-ai/dsh-util-workspace-path": "link:packages/util/workspace-path",
+    "@deepseek-ai/schemastery": "link:vendor/schemastery",
+    "@fortune-sheet/core": "link:packages/client/ui-sidebar-documentpreview/node_modules/@fortune-sheet/core",
+    "@fortune-sheet/react": "link:packages/client/ui-sidebar-documentpreview/node_modules/@fortune-sheet/react",
+    "@types/node": "22.19.7",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@deepseek-ai/dsh-client-ui-layout": "link:link:../../.dsh/runtime/packages/client/ui-layout",
+    "vite": "6.4.3",
+    "typescript": "6.0.3",
+    "@deepseek-ai/dsh-llm": "link:packages/llm/llm"
+  },
+  "dependencies": {
+    "annotation-kit": "0.1.0"
+  },
+  "description": "Version-pinned DSH rc.5 adapter for annotation-kit"
+}

@@ -1,0 +1,41 @@
+.control { display: inline-flex; }
+.toggle { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 34px; padding: 0 12px; border: 1px solid var(--color-border-subtle); border-radius: 999px; corner-shape: round; background: var(--color-surface); color: var(--color-text-primary); font: inherit; font-size: 14px; font-weight: 400; white-space: nowrap; cursor: pointer; box-shadow: 0 2px 5px #00000005; }
+.toggle[aria-pressed="true"] { color: #3268ba; background: #e8effa; border-color: transparent; }
+/* Electron applies app-region to the full layout box, even through clip-path
+   and pointer-events:none. Only the interactive panels may subtract dragging. */
+.chrome { z-index: 1100; }
+.chrome button, .chrome textarea { font: inherit; font-size: 14px; font-weight: 400; }
+.chrome button { cursor: pointer; }
+.chrome button:disabled, .toggle:disabled { cursor: default; opacity: .45; }
+.chrome button:focus-visible, .toggle:focus-visible { outline: 2px solid #3884f5; outline-offset: 3px; }
+.outline { position: fixed; box-sizing: border-box; border: 1px dashed #3977c4; background: #4188ed12; pointer-events: none; }
+.marker { position: fixed; display: block; width: 26px; height: 26px; border: 1px solid white; border-radius: 50% 50% 50% 0; corner-shape: round; background: #3b82ef; box-shadow: 0 2px 4px #00000010; pointer-events: auto; padding: 0; }
+span.marker { pointer-events: none; }
+.ask { position: fixed; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--color-border-subtle); border-radius: 10px; background: var(--color-surface); color: var(--color-text-primary); box-shadow: 0 4px 10px #00000012; pointer-events: auto; }
+.ask kbd { color: var(--color-text-secondary); font: inherit; font-size: 11px; margin-left: 4px; }
+.comment { position: fixed; box-sizing: border-box; border: 1px solid var(--color-border-subtle); border-radius: 24px; corner-shape: round; background: var(--color-surface); color: var(--color-text-primary); box-shadow: 0 2px 5px #00000009; padding: 7px 8px 7px 16px; pointer-events: auto; }
+.row { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.comment textarea { flex: 1; min-width: 0; width: 100%; padding: 3px 0; border: 0; outline: none; resize: none; box-shadow: none; background: transparent; color: inherit; line-height: 20px; overflow-y: auto; }
+.comment textarea::placeholder { color: var(--color-text-tertiary); font-size: 12px; }
+.confirm { flex: 0 0 28px; width: 28px; height: 28px; border: 0; padding: 0; display: grid; place-items: center; background: var(--color-text-primary); color: var(--color-surface); border-radius: 50%; corner-shape: round; }
+.expanded { border-radius: 22px; padding: 12px; box-shadow: 0 4px 16px #0000000d; }
+.expanded textarea { min-height: 48px; }
+.actions { display: flex; align-items: center; gap: 6px; padding-top: 12px; }
+.actions button { background: transparent; color: inherit; border: 1px solid var(--color-border-subtle); border-radius: 999px; corner-shape: round; padding: 7px 12px; }
+.actions .delete { margin-right: auto; border: 0; padding: 6px; color: var(--color-text-secondary); }
+.actions .save { background: var(--color-text-primary); color: var(--color-surface); border-color: transparent; }
+.batch { position: fixed; display: flex; align-items: center; gap: 8px; transform: translateX(-50%); box-sizing: border-box; padding: 6px 6px 6px 10px; border-radius: 12px; background: #303030; color: #fff; pointer-events: auto; box-shadow: 0 3px 8px #00000012; white-space: nowrap; }
+.count { font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
+.grip { font-size: 16px; opacity: .5; cursor: grab; touch-action: none; user-select: none; }
+.grip:active { cursor: grabbing; }
+.batch button { border: 0; border-radius: 7px; background: transparent; color: inherit; padding: 6px 8px; font-size: 13px; }
+.batch .count { padding-right: 12px; border-right: 1px solid #ffffff35; border-radius: 0; font-weight: 700; }
+:global([data-sheet-annotations]) .outline { border-width: 2px; }
+.batch .send { background: #4389f3; color: #fff; }
+.batch button:hover { background: #ffffff20; }
+.batch .send:hover { background: #5897f5; }
+.error { position: fixed; box-sizing: border-box; padding: 10px 14px; border: 1px solid var(--color-border-subtle); border-radius: 12px; background: var(--color-surface); color: var(--color-text-danger, #c53030); font-size: 13px; overflow-wrap: anywhere; pointer-events: auto; }
+.snapshotReview { position: fixed; box-sizing: border-box; border-radius: 14px; padding: 12px; background: var(--color-surface); border: 1px solid var(--color-border-subtle); overflow: auto; pointer-events: auto; }
+:global([data-page-region-selecting] [data-pdf-page]) { cursor: crosshair; user-select: none; }
+:global([data-theme="dark"]) .toggle[aria-pressed="true"] { color: #88b8ff; background: #234067; }
+@media (prefers-reduced-motion: no-preference) { .comment, .batch { animation: enter 100ms ease-out; } @keyframes enter { from { opacity: 0; } to { opacity: 1; } } }

@@ -1,0 +1,2 @@
+.overlay { position: fixed; inset: 0; pointer-events: none; -webkit-app-region: initial; }
+:global([data-annotation-window-interactive]) { -webkit-app-region: no-drag; }
