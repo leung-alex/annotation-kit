@@ -1,5 +1,5 @@
 import { AnnotationError, annotationFailure, annotationErrorText, type AnnotationFailure } from '../../errors.ts'
-import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { WindowOverlay, useInteractiveWindowRegion } from '../../../ui/regions.tsx'
 import type { Hooks, Selection } from '@fortune-sheet/core'
@@ -39,8 +39,10 @@ export function SheetSurface({ resourceAddress: address, format, value, bridge, 
   const [editor, setEditor] = useState<{ snapshot: SpreadsheetSnapshot; saved: boolean }>(), [comment, setComment] = useState('')
   const [editorHeight, setEditorHeight] = useState(0)
   const [error, setError] = useState<AnnotationFailure>(''), [busy, setBusy] = useState(false)
+  const [capture, setCapture] = useState<{ revision: number; action: 'begin' | 'menu'; session: string | undefined; address: string }>()
+  const captureRevision = useRef(0)
   const pending = useRef<AbortController>(), gesture = useRef(false), frame = useRef<number>()
-  const selectionFrame = useRef<number>(), gestureFrame = useRef<number>()
+  const selectionFrame = useRef<number>()
   const painted = useRef(new PaintedCells()), [, repaint] = useState(0)
   const current = useRef({ mode, busy, editor, session, activeSheet })
   current.current = { mode, busy, editor, session, activeSheet }
@@ -49,8 +51,16 @@ export function SheetSurface({ resourceAddress: address, format, value, bridge, 
   let items: readonly SpreadsheetSnapshot[] = []
   let restoreError: AnnotationFailure = ''
   try { if (session) items = batches.read(session, address).filter((s): s is SpreadsheetSnapshot => s.version === 3) } catch (e) { restoreError = annotationFailure(e) }
-  const close = () => { setEditor(undefined); setMenu(false); setReview(false); setComment(''); setError(''); workbookHost.current?.focus({ preventScroll: true }) }
+  const close = () => { captureRevision.current++; gesture.current = false; setEditor(undefined); setMenu(false); setReview(false); setComment(''); setError(''); workbookHost.current?.focus({ preventScroll: true }) }
+  const requestCapture = (action: 'begin' | 'menu') => {
+    const request = { revision: ++captureRevision.current, action, session: current.current.session, address }
+    // FortuneSheet queues its mousemove selection in React. A transition commits
+    // after those input/default-priority updates, unlike a pre-paint RAF callback.
+    startTransition(() => setCapture(request))
+  }
+  const requestCaptureRef = useRef(requestCapture); requestCaptureRef.current = requestCapture
   const begin = (saved?: SpreadsheetSnapshot) => {
+    captureRevision.current++
     if (!api.current || current.current.busy) return
     try {
       const selections = api.current.getSelection()
@@ -64,6 +74,13 @@ export function SheetSurface({ resourceAddress: address, format, value, bridge, 
     } catch (e) { setError(annotationFailure(e)) }
   }
   const beginRef = useRef(begin); beginRef.current = begin
+  useEffect(() => {
+    if (!capture || capture.revision !== captureRevision.current || capture.session !== session || capture.address !== address) return
+    captureRevision.current++
+    if (current.current.busy) return
+    if (capture.action === 'begin') beginRef.current()
+    else setMenu(true)
+  }, [capture, session, address])
   const hooks = useMemo<Hooks>(() => ({
     beforeRenderCellArea: () => {
       if (frame.current === undefined) {
@@ -86,7 +103,7 @@ export function SheetSurface({ resourceAddress: address, format, value, bridge, 
         setActiveSheet(sheetId)
       })
     },
-    afterActivateSheet: () => { setMenu(false); setEditor(undefined) },
+    afterActivateSheet: () => { captureRevision.current++; setMenu(false); setEditor(undefined) },
   }), [])
   useEffect(() => bridge.subscribe(() => setSession(bridge.targetKey())), [])
   useEffect(() => {
@@ -115,29 +132,33 @@ export function SheetSurface({ resourceAddress: address, format, value, bridge, 
   useEffect(() => {
     const down = (e: PointerEvent) => {
       if (chrome.current?.contains(e.target as Node)) return
+      captureRevision.current++
+      gesture.current = false
       if (!mount.current?.contains(e.target as Node)) { setMenu(false); if (!current.current.busy) setEditor(undefined); return }
       gesture.current = e.button === 0 && (e.target as Element).closest('.fortune-cell-area') !== null
-      if (gesture.current && !current.current.busy) setEditor(undefined)
+      if (gesture.current && !current.current.busy) { setEditor(undefined); setMenu(false) }
     }
     const up = () => {
       if (!gesture.current) return
       gesture.current = false
-      gestureFrame.current = requestAnimationFrame(() => { gestureFrame.current = undefined; if (current.current.mode) beginRef.current(); else setMenu(true) })
+      requestCaptureRef.current(current.current.mode ? 'begin' : 'menu')
     }
+    const cancel = () => { gesture.current = false; captureRevision.current++ }
     const key = (e: KeyboardEvent) => {
       const within = mount.current?.closest('[data-textpreview-url]')?.contains(document.activeElement) || chrome.current?.contains(document.activeElement)
       if (!within) return
       if (e.key === 'Escape') { e.preventDefault(); if (!current.current.busy) { if (!current.current.editor) setMode(false); close() } }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'x' && !current.current.editor) {
-        e.preventDefault(); e.stopPropagation(); beginRef.current()
+        e.preventDefault(); e.stopPropagation(); requestCaptureRef.current('begin')
       }
     }
     document.addEventListener('pointerdown', down, true); document.addEventListener('pointerup', up)
+    document.addEventListener('pointercancel', cancel)
     window.addEventListener('keydown', key, true)
     return () => { document.removeEventListener('pointerdown', down, true); document.removeEventListener('pointerup', up); window.removeEventListener('keydown', key, true)
+      document.removeEventListener('pointercancel', cancel); cancel()
       if (frame.current !== undefined) cancelAnimationFrame(frame.current)
       if (selectionFrame.current !== undefined) cancelAnimationFrame(selectionFrame.current)
-      if (gestureFrame.current !== undefined) cancelAnimationFrame(gestureFrame.current)
       pending.current?.abort() }
   }, [])
   useEffect(() => registerSpreadsheet(address, snapshot => {
@@ -196,7 +217,7 @@ export function SheetSurface({ resourceAddress: address, format, value, bridge, 
       })}
       {menu && selectedBox && !editor && <button {...interactiveWindowRegion} type="button" className={css.ask} data-sheet-ask
         style={{ left: Math.max(bounds.left + 8, Math.min(selectedBox.left, bounds.right - 235)), top: Math.min(selectedBox.bottom + 8, bounds.bottom - 50) }}
-        onPointerDown={e => e.preventDefault()} onClick={() => begin()}>{t('page.ask')}<kbd>Ctrl Shift X</kbd></button>}
+        onPointerDown={e => e.preventDefault()} onClick={() => requestCapture('begin')}>{t('page.ask')}<kbd>Ctrl Shift X</kbd></button>}
       {editor && editorBox && <><div className={css.outline} style={editorBox} data-sheet-range={editor.snapshot.a1} />
         <span className={css.marker} style={{ left: Math.min(editorBox.right - 13, bounds.right - 30), top: Math.max(bounds.top + 4, editorBox.top - 13) }} />
         <CommentEditor key={editor.snapshot.id} t={t} style={{ left, top, width }} input={input} comment={comment} setComment={setComment}

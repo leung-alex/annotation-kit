@@ -1,0 +1,8 @@
+:root { --color-surface: #fff; --color-text-primary: #20252d; --color-text-secondary: #566170; --color-text-tertiary: #738091; --color-border-subtle: #d9dfe7; --color-background-secondary-soft: #f4f6f8; }
+body { margin: 0; font: 14px system-ui, sans-serif; background: #f3f5f7; }
+body > [data-annotation-window-overlay] { font-family: system-ui, sans-serif; }
+main[data-textpreview-url] { width: 1000px; margin: 24px; background: white; font-family: system-ui, sans-serif; }
+main[data-textpreview-url] > header { height: 64px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+main[data-textpreview-url] > header h1 { font-size: 18px; }
+.sheet-body { height: 650px; display: flex; flex-direction: column; min-height: 0; overflow: hidden; white-space: normal; font-family: system-ui, sans-serif; }
+.workbook { flex: 1; min-height: 0; position: relative; }

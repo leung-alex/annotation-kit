@@ -21,6 +21,12 @@ Tests cover immutable text/cell snapshots, original formulas and raw values, ses
 
 The browser interaction check exercises actual pointer selection, web PNG handoff, text/assistant references, serialization, sent-card display and reload recovery. Its source is [verify-demo.mjs](../scripts/verify-demo.mjs).
 
+`pnpm test:sheets` starts an independent Vite fixture using the real FortuneSheet 1.0.4 workbook and React 18. It checks 33 scenarios: all three annotation entry points, single cells, native range drags, 20 rapid event replays, saved cell coordinates/values, immutable snapshots after selection/source changes, reload/edit recovery, superseded gestures, and cancellation on Escape, pointer cancellation, outside clicks, session changes and unmount. Quick replays hold React Scheduler work until after pointerup's animation frame, reproducing the ordering that made 0.1.0 freeze `A2` while the final selection was `A2:D3`. The fix queues capture as a React transition and reads the public workbook API after that commit; it adds no timer or frame-count delay.
+
+The fixture applies only FortuneSheet's existing host read-only InputBox guard during dependency transformation, because the unpatched npm 1.0.4 effect otherwise loops. It does not change selection code or installed dependencies and requires no DSH/Aione checkout. CI installs Chromium for this check; locally it uses Edge on Windows or Playwright Chromium elsewhere (`ANNOTATION_SHEET_BROWSER` overrides the channel). `ANNOTATION_SHEET_EVIDENCE` optionally saves screenshots and JSON outside the source tree. For differential checks, `ANNOTATION_SHEET_SURFACE_SOURCE` supplies an alternate SheetSurface source under the same module identity and `ANNOTATION_SHEET_CHECK` filters scenario names.
+
+To verify the shipped JavaScript, set `ANNOTATION_SHEET_PACKAGE` to an installed annotation-kit package directory. The same fixture then imports that package's `dist/react.js` and stylesheet instead of the source surface.
+
 ## DSH operations exercised
 
 - Native web element selection, a captured PNG, draft admission, send and card expansion.

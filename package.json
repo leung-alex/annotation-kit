@@ -1,6 +1,6 @@
 {
   "name": "annotation-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Host-independent annotations for web pages, documents, spreadsheets and conversation text",
   "type": "module",
   "license": "MIT",
@@ -48,6 +48,7 @@
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:sheets": "node scripts/verify-sheets.mjs",
     "verify": "pnpm typecheck && pnpm test && pnpm build && node scripts/check-package.mjs",
     "dev": "vite --config examples/react/vite.config.ts",
     "build:demo": "vite build --config examples/react/vite.config.ts",

@@ -7,6 +7,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import assert from 'node:assert/strict'
 const root = fileURLToPath(new URL('../', import.meta.url))
+const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 const manager = process.env.npm_execpath
 if (!manager) throw new Error('Run pnpm verify or pnpm check:package')
 function run(args, cwd) {
@@ -16,7 +17,7 @@ function run(args, cwd) {
 }
 mkdirSync(join(root, '.artifacts'), { recursive: true })
 run(['pack', '--pack-destination', join(root, '.artifacts')], root)
-const tarball = join(root, '.artifacts', 'annotation-kit-0.1.0.tgz')
+const tarball = join(root, '.artifacts', `annotation-kit-${version}.tgz`)
 const consumer = mkdtempSync(join(tmpdir(), 'annotation-kit-consumer-'))
 writeFileSync(join(consumer, 'package.json'), JSON.stringify({ private: true, type: 'module', scripts: { build: 'vite build', typecheck: 'tsc --noEmit' },
   dependencies: { 'annotation-kit': `file:${tarball.replaceAll('\\', '/')}`, react: '18.3.1', 'react-dom': '18.3.1' },
